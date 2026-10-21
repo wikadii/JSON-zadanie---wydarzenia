@@ -1,60 +1,104 @@
 package com.example.zadaniejson;
 
+import android.content.Context;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class EventAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
+import androidx.recyclerview.widget.RecyclerView;
 
-    private String[] localDataSet;
+import com.bumptech.glide.Glide;
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+import org.w3c.dom.Text;
 
-        public ViewHolder(View view) {
-            super(view);
-            textView = (TextView) view.findViewById(R.id.textView);
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventHolder> {
+    Context context;
+    List<Event> events = new ArrayList<>();
+
+    public EventAdapter(Context context) {
+        this.context = context;
+    }
+    public void setEvents(List<Event> events){
+        this.events = events;
+        notifyDataSetChanged();
+    }
+
+    public static class EventHolder extends RecyclerView.ViewHolder {
+        ImageView image;
+//        Calendar date;
+        TextView title, date, description, category;
+        EventHolder(LinearLayout layout, ImageView image, TextView title, TextView date, TextView description, TextView category){
+            super(layout);
+            this.image = image;
+            this.title = title;
+            this.date = date;
+            this.description = description;
+            this.category = category;
+
         }
 
-        public TextView getTextView() {
-            return textView;
+    }
+
+    @Override
+    public EventHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        LinearLayout layout = new LinearLayout(context);
+        layout.setPadding(20, 20, 20, 20);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+
+        ImageView image = new ImageView(context);
+        image.setLayoutParams(new LinearLayout.LayoutParams(250, 250));
+
+        LinearLayout texts = new LinearLayout(context);
+        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setPadding(20, 0, 0, 0);
+
+        TextView title = new TextView(context);
+        TextView date = new TextView(context);
+        TextView description = new TextView(context);
+        TextView category = new TextView(context);
+
+        title.setTextSize(18);
+        title.setTypeface(null, Typeface.BOLD);
+
+        texts.addView(title);
+        texts.addView(date);
+        texts.addView(description);
+        texts.addView(category);
+
+        layout.addView(image);
+        layout.addView(texts);
+
+        return new EventHolder(layout, image, title, date, description, category);
+    }
+    @Override
+    public void onBindViewHolder(EventHolder holder, final int position) {
+        Event event = events.get(position);
+        holder.title.setText(event.getTitle());
+        Calendar date = event.getDate();
+        if(date != null){
+            holder.date.setText(
+                    new java.text.SimpleDateFormat("dd.MM.yyyy",
+                            java.util.Locale.getDefault())
+                            .format(date.getTime()));
         }
+        holder.description.setText(event.getDescription());
+        holder.category.setText(event.getCategory());
+
+        Glide.with(context)
+                .load(event.getImageUrl())
+                .into(holder.image);
     }
 
-    /**
-     * Initialize the dataset of the Adapter
-     *
-     * @param dataSet String[] containing the data to populate views to be used
-     * by RecyclerView
-     */
-    public CustomAdapter(String[] dataSet) {
-        localDataSet = dataSet;
-    }
-
-    // Create new views (invoked by the layout manager)
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.text_row_item, viewGroup, false);
-
-        return new ViewHolder(view);
-    }
-
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-        viewHolder.getTextView().setText(localDataSet[position]);
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return localDataSet.length;
+        return events.size();
     }
 }

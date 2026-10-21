@@ -1,9 +1,14 @@
 package com.example.zadaniejson;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Calendar;
+
 public class Event {
     private int id;
     private String title;
-    private String date;
+    @SerializedName("date")
+    private Calendar date;
     private String description;
     private String category;
     private String imageUrl;
@@ -27,11 +32,11 @@ public class Event {
         this.title = title;
     }
 
-    public String getDate() {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 

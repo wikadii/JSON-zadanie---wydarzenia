@@ -23,6 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    EventAdapter eventAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerViewEvents);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        eventAdapter = new EventAdapter(this);
+        recyclerView.setAdapter(eventAdapter);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://raw.githubusercontent.com/wikadii/JSON-zadanie/refs/heads/main/")
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         List<Event> events = response.body();
                         Log.d("Aplikacja", "Pobrano " + events.size() + " wydarzeń");
-
+                        eventAdapter.setEvents(response.body());
                     }
 
                     @Override
@@ -63,5 +67,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
     }
 }
