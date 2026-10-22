@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
                         List<Event> events = response.body();
-                        Log.d("Aplikacja", "Pobrano " + events.size() + " wydarzeń");
                         eventAdapter.setEvents(response.body());
                     }
 
