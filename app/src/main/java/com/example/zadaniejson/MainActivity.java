@@ -12,7 +12,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,9 +49,22 @@ public class MainActivity extends AppCompatActivity {
         eventAdapter = new EventAdapter(this);
         recyclerView.setAdapter(eventAdapter);
 
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Calendar.class, (JsonDeserializer<Calendar>) (json,type, ctx) -> {
+                    try {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+                                .parse(json.getAsString()));
+                        return calendar;
+                    }catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
+                }).create();
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://raw.githubusercontent.com/wikadii/JSON-zadanie/refs/heads/main/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         ApiConnection apiConnection = retrofit.create(ApiConnection.class);
         Call<List<Event>> call = apiConnection.getEvents();

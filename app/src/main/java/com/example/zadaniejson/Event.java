@@ -11,6 +11,7 @@ public class Event {
     private Calendar date;
     private String description;
     private String category;
+    @SerializedName("image-url")
     private String imageUrl;
 
     public Event(){
